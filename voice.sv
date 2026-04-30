@@ -44,9 +44,22 @@ module piano_voice(
         end
     end
 
+    //dynamic low-pass filter
+    // reg signed [23:0] lpf_reg = 0;
+	//  wire signed [23:0] lpf_input = $signed({raw_wave, 8'b0}); 
+    // wire[3:0] k = (envelope > 16'hC000) ? 4'd1 :  // strong 
+    //                (envelope > 16'h8000) ? 4'd2 :  // medium
+    //                (envelope > 16'h4000) ? 4'd3 :  // weak
+    //                                        4'd4; // very weak
+
+    // always @(posedge clk_lrck) begin
+    //     // shift raw_wave for equal lpf_reg
+    //     lpf_reg <= lpf_reg + $signed((lpf_input - lpf_reg) >>> k);
+    // end
+    // wire signed [15:0] filtered_wave = lpf_reg[23:8];
     // VCA
-    wire signed [16:0] env_signed = {1'b0, envelope};
-    wire signed [32:0] mixed_audio = raw_wave * env_signed;
+    wire signed [16:0] env_signed = $signed({1'b0, envelope});
+    wire signed [32:0] mixed_audio = $signed(raw_wave) * env_signed;
     assign audio_out = mixed_audio[31:16];
 
 endmodule
