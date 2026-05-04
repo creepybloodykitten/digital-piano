@@ -33,7 +33,8 @@ module piano_voice(
     always @(posedge clk_lrck) begin
         decay_div <= decay_div + 1'b1;
         if (key_just_pressed) begin
-            envelope <= {velocity[6:0], 9'b0}; //from 0..127 to 0..65535
+
+				envelope <= 16'd5000 + ( {8'b0, velocity} * velocity * 16'd3 ); //log volume with base 
         end 
         else if (key_pressed) begin
             if (decay_div == 0 && envelope > 0)
@@ -62,5 +63,28 @@ module piano_voice(
     wire signed [16:0] env_signed = $signed({1'b0, envelope});
     wire signed [32:0] mixed_audio = $signed(raw_wave) * env_signed;
     assign audio_out = mixed_audio[31:16];
+endmodule
 
+module note_to_freq (
+    input  wire [6:0] note,
+    output reg[15:0] freq
+);
+    always @(*) begin
+        case (note)
+            48: freq = 16'd176; // До (малая)
+            49: freq = 16'd186; 
+            50: freq = 16'd197; // Ре
+            51: freq = 16'd209; 
+            52: freq = 16'd221; // Ми
+            53: freq = 16'd234; // Фа
+            54: freq = 16'd248; 
+            55: freq = 16'd263; // Соль
+            56: freq = 16'd279; 
+            57: freq = 16'd295; // Ля
+            58: freq = 16'd313; 
+            59: freq = 16'd331; // Си
+            60: freq = 16'd350; // До (первая)
+            default: freq = 16'd0;
+        endcase
+    end
 endmodule
