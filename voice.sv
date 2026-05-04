@@ -1,6 +1,7 @@
 module piano_voice(
     input  wire clk_lrck,      // sample frequency clock
     input  wire [15:0] freq,   // note frequency (phase increment)
+    input [7:0] velocity, 
     input  wire key_pressed,   // key status
     output wire signed [15:0] audio_out // output of one voice
 );
@@ -32,7 +33,7 @@ module piano_voice(
     always @(posedge clk_lrck) begin
         decay_div <= decay_div + 1'b1;
         if (key_just_pressed) begin
-            envelope <= 16'hFFFF;
+            envelope <= {velocity[6:0], 9'b0}; //from 0..127 to 0..65535
         end 
         else if (key_pressed) begin
             if (decay_div == 0 && envelope > 0)
