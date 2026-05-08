@@ -12,7 +12,9 @@ module piano(
     output wire AUD_BCLK,     // Bit Clock
     output wire AUD_DACLRCK,  // Left/Right Clock
     output wire AUD_DACDAT,   // Данные
-    output wire AUD_ADCLRCK   // сигнал синхронизации для каналов ацп
+    output wire AUD_ADCLRCK,   // сигнал синхронизации для каналов ацп
+	 
+	 input  wire uart_rx_pin
 );
 
     // Кодеку нужно, чтобы ADC и DAC LRCK были одинаковыми
@@ -34,7 +36,8 @@ module piano(
         .aud_xck (AUD_XCK),
         .aud_bclk(AUD_BCLK),
         .aud_lrck(AUD_DACLRCK),
-        .aud_dat (AUD_DACDAT)
+        .aud_dat (AUD_DACDAT),
+		  .rx_pin(uart_rx_pin)
     );
 
 endmodule
