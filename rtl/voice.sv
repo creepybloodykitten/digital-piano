@@ -30,15 +30,25 @@ module piano_voice(
     wire key_just_pressed = key_pressed & ~last_key;
 
     reg [2:0] decay_div;
+    // Key Tracking: вычисляем скорость затухания в зависимости от высоты ноты
+    // freq сдвигается, чтобы получить разумное значение прибавки.
+    // Чем выше нота (freq больше), тем больше decay_rate.
+    wire [15:0] release_rate = 16'd5 + (freq >> 4); 
+    wire [15:0] decay_step   = (envelope >> 14) + (freq >> 7) + 16'd1;
+    
+
     always @(posedge clk_lrck) begin
         decay_div <= decay_div + 1'b1;
         if (key_just_pressed) begin
-
-				envelope <= 16'd5000 + ( {8'b0, velocity} * velocity * 16'd3 ); //log volume with base 
+			envelope <= 16'd5000 + ( {8'b0, velocity} * velocity * 16'd3 ); //log volume with base 
         end 
         else if (key_pressed) begin
-            if (decay_div == 0 && envelope > 0)
-                envelope <= envelope - (envelope >> 13) - 1'b1;
+            if (decay_div == 0 ) begin
+                if (envelope > decay_step)
+                    envelope <= envelope - decay_step;
+                else 
+                    envelope <= 0;
+            end
         end 
         else begin
             if (envelope > 16'd30) envelope <= envelope - 16'd30;

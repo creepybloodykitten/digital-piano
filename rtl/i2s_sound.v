@@ -61,6 +61,11 @@ module Simple_I2S_Tone(
                         allocated = 1; // заняли голос, дальше не ищем
                     end
                 end
+                if (!allocated) begin
+                    v_on[0]   <= 1'b1;
+                    v_note[0] <= midi_note[6:0];
+                    v_vel[0]  <= midi_vel;
+                end
             end else begin
                 // пришла команда отпустить note Off
                 for (i = 0; i < 10; i = i + 1) begin
