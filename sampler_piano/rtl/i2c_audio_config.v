@@ -112,8 +112,8 @@ module I2C_AV_Config (
 			SET_LIN_L	:	LUT_DATA	<=	16'h001A;
 			SET_LIN_R	:	LUT_DATA	<=	16'h021A;
 			
-			SET_HEAD_L  : LUT_DATA <= 16'h047B; // Громкость Лево 
-			SET_HEAD_R  : LUT_DATA <= 16'h067B; // Громкость Право 
+			SET_HEAD_L  : LUT_DATA <= 16'h047F; // Громкость Лево 
+			SET_HEAD_R  : LUT_DATA <= 16'h067F; // Громкость Право 
 			A_PATH_CTRL : LUT_DATA <= 16'h0812; // Включить DAC (Аналоговый путь)
 			D_PATH_CTRL : LUT_DATA <= 16'h0A00; // Снять Mute (Цифровой путь)
 			POWER_ON    : LUT_DATA <= 16'h0C00; // Включить питание всех узлов

@@ -76,7 +76,7 @@ module piano_sample(
 	wire [7:0] rx_byte;
     wire rx_ready;
 
-    uart_rx #(.CLK(50000000), .BAUD_RATE(115200)) rx_inst (
+    uart_rx #(.CLK(50000000), .BAUD_RATE(921600)) rx_inst (
         .clk(CLOCK_50_B5B),
         .reset_n(1'b1),
         .rx_pin(UART_RX), 

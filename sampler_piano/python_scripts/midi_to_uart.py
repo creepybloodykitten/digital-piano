@@ -3,7 +3,7 @@ import serial
 
 # Настройки
 SERIAL_PORT = 'COM5'  
-BAUD_RATE = 115200    
+BAUD_RATE = 921600    
 
 try:
     ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
