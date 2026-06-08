@@ -1,55 +1,116 @@
+// module midi_decoder (
+//     input clk,
+//     input rx_ready,
+//     input [7:0] rx_data,
+    
+//     output reg [7:0] out_note,
+//     output reg[7:0] out_velocity,
+//     output reg       out_on,  
+//     output reg       out_trig 
+// );
+
+//     reg [2:0] state = 0; 
+//     reg [7:0] cmd_type;
+//     reg[7:0] note_temp;
+
+//     always @(posedge clk) begin
+//         out_trig <= 0;
+        
+//         if (rx_ready) begin
+//             case (state)
+//                 0: begin
+//                     if (rx_data[7]) begin
+//                         cmd_type <= rx_data;
+//                         state <= 1;
+//                     end
+//                 end
+                
+//                 1: begin 
+//                     note_temp <= rx_data;
+//                     state <= 2;
+//                 end
+                
+//                 2: begin 
+//                     if ((cmd_type[7:4] == 4'h9) && (rx_data > 0)) begin
+//                         out_note <= note_temp;
+//                         out_velocity <= rx_data;
+                        
+                        
+//                         state <= 3; 
+//                     end else begin
+//                         out_on <= 0;
+//                         out_trig <= 1;
+//                         state <= 0;
+//                     end
+//                 end
+//             endcase
+            
+
+//         end else if (state == 3) begin
+//             out_on <= 1;   
+//             out_trig <= 1;
+//             state <= 0;    
+//         end
+//     end
+// endmodule
+
 module midi_decoder (
     input clk,
     input rx_ready,
     input [7:0] rx_data,
     
     output reg [7:0] out_note,
-    output reg[7:0] out_velocity,
+    output reg [7:0] out_velocity,
     output reg       out_on,  
     output reg       out_trig 
 );
 
-    reg [2:0] state = 0; 
-    reg [7:0] cmd_type;
-    reg[7:0] note_temp;
+    reg [1:0] state = 0; 
+    reg [7:0] running_status = 0;
+    reg [7:0] note_temp;
 
     always @(posedge clk) begin
         out_trig <= 0;
         
         if (rx_ready) begin
-            case (state)
-                0: begin
-                    if (rx_data[7]) begin
-                        cmd_type <= rx_data;
-                        state <= 1;
+            if (rx_data[7]) begin
+                // Пришел новый Status Byte
+                running_status <= rx_data;
+                state <= 1; // Ждем первый байт данных (Ноту)
+            end 
+            else begin
+                // Пришел Data Byte
+                case (state)
+                    0: begin
+                        // Сработал Running Status (статуса не было, сразу пришли данные)
+                        if (running_status[7:4] == 4'h9 || running_status[7:4] == 4'h8) begin
+                            note_temp <= rx_data;
+                            state <= 2; // Переходим к ожиданию Velocity
+                        end
                     end
-                end
-                
-                1: begin 
-                    note_temp <= rx_data;
-                    state <= 2;
-                end
-                
-                2: begin 
-                    if ((cmd_type[7:4] == 4'h9) && (rx_data > 0)) begin
+                    1: begin 
+                        // Обычный прием ноты после Status Byte
+                        note_temp <= rx_data;
+                        state <= 2;
+                    end
+                    2: begin 
+                        // Пришел Velocity
                         out_note <= note_temp;
                         out_velocity <= rx_data;
                         
+                        // Если это команда Note ON (0x9_) и Velocity > 0
+                        if ((running_status[7:4] == 4'h9) && (rx_data > 0)) begin
+                            out_on <= 1;
+                        end else begin
+                            // Команда Note OFF (0x8_) ИЛИ Note ON с Velocity == 0
+                            out_on <= 0;
+                        end
                         
-                        state <= 3; 
-                    end else begin
-                        out_on <= 0;
                         out_trig <= 1;
-                        state <= 0;
+                        state <= 0; // Возвращаемся в начало для приема следующих данных
                     end
-                end
-            endcase
-            
-
-        end else if (state == 3) begin
-            out_on <= 1;   
-            out_trig <= 1;
-            state <= 0;    
+                endcase
+            end
         end
     end
 endmodule

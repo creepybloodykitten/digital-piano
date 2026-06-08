@@ -4,6 +4,7 @@ incremental_db/
 output_files/
 simulation/
 hc_output/
+greybox_tmp/
 
 
 *.bak
