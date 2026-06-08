@@ -1,4 +1,4 @@
-
+.qsys_edit/
 db/
 incremental_db/
 output_files/
@@ -6,8 +6,22 @@ simulation/
 hc_output/
 greybox_tmp/
 
+c5_pin_model_dump.txt
+cio_dump_disallowed_lists.echo
+PLLJ_PLLSPE_INFO.txt
+*summary.csv
+
+*.rpt
+*.summary
+*.smsg
+*.done
+*.htm
+*.jdi
+*.pin
 
 *.bak
 *.txt
 *.echo
-
+*.sof
+*.pof
+*.rbf
