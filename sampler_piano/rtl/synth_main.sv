@@ -34,7 +34,7 @@ module Simple_I2S_Tone(
     assign aud_lrck = audio_cnt[9]; 
 
     // Глобальный декодер частоты и сэмплов (1 на весь проект!)
-    wire [3:0] current_midi_sample_index;
+    wire [4:0] current_midi_sample_index;
     wire [15:0] current_midi_step;
 
     note_to_freq_and_sample n2f_inst (
@@ -44,7 +44,7 @@ module Simple_I2S_Tone(
     );
 
     // Массивы регистров для хранения состояния 10 голосов
-    reg [3:0]  v_sample_index [0:9];
+    reg [4:0]  v_sample_index [0:9];
     reg [15:0] v_step         [0:9];
     reg [6:0]  v_note         [0:9];
     reg [7:0]  v_vel          [0:9];

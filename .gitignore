@@ -5,6 +5,7 @@ output_files/
 simulation/
 hc_output/
 greybox_tmp/
+.vscode/
 
 c5_pin_model_dump.txt
 cio_dump_disallowed_lists.echo

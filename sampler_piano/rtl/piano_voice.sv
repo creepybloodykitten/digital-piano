@@ -2,7 +2,7 @@ module piano_voice (
     input  wire clk_lrck,      // 44.1 kHz
     input  wire ram_clk,       // Частота памяти
     input  wire [15:0] step,   // Шаг чтения в формате 12.12
-    input  wire [3:0]  sample_index, // Индекс сэмпла (0 до 8)
+    input  wire [4:0]  sample_index, // Индекс сэмпла (0 до 8)
     input  wire [7:0] velocity, 
     input  wire key_pressed,   
     output wire signed [15:0] audio_out,

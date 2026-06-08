@@ -4,25 +4,27 @@ import os
 
 # Автоопределение корневой папки проекта
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-if os.path.exists(os.path.join(SCRIPT_DIR, 'original_samples')):
+if os.path.exists(os.path.join(SCRIPT_DIR, 'generated_samples')):
     PROJECT_DIR = SCRIPT_DIR
 else:
     PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 
 # Настройка путей в проекте
-INPUT_DIR = os.path.join(PROJECT_DIR, 'original_samples')
+INPUT_DIR = os.path.join(PROJECT_DIR, 'generated_samples')
 OUTPUT_DIR = os.path.join(PROJECT_DIR, 'raw_samples')
 OUTPUT_RAW = os.path.join(OUTPUT_DIR, 'samples.raw')
 
 # Строгий порядок объединения нот для верного соответствия индексам в Verilog
 NOTES = [
-    "C3", "D#3", "F#3", "A3",
-    "C4", "D#4", "F#4", "A4",
-    "C5"
+    "00_note48", "01_note49", "02_note50", "03_note51", "04_note52", 
+    "05_note53", "06_note54", "07_note55", "08_note56", "09_note57", 
+    "10_note58", "11_note59", "12_note60", "13_note61", "14_note62", 
+    "15_note63", "16_note64", "17_note65", "18_note66", "19_note67", 
+    "20_note68", "21_note69", "22_note70", "23_note71", "24_note72"
 ]
 
 # Слой громкости. Можете изменить на v12 или другой, если захотите пересобрать пианино
-VELOCITY = "v8" 
+VELOCITY = "" 
 
 MAX_SECONDS = 3.0    # Длина каждого сэмпла
 
