@@ -31,40 +31,36 @@ module piano_voice (
     // Расширяем velocity до 16 бит для формулы
     wire [15:0] vel_16 = {8'b0, velocity};
 
+    wire [15:0] decay_step = key_pressed ? 16'd2 : 16'd20;
+
     always @(posedge clk_lrck) begin
         decay_div <= decay_div + 1'b1;
 
-        // --- УПРАВЛЕНИЕ СОСТОЯНИЯМИ ---
         if (key_just_pressed) begin
-            // Твоя формула логарифмической/квадратичной громкости от Velocity
             target_vol <= 16'd5000 + (vel_16 * vel_16 * 16'd3);
             env_state <= ST_ATTACK;
-            sample_ptr <= 0; // Начинаем сэмпл заново
-            // Важно: мы НЕ сбрасываем envelope в 0 моментально, чтобы избежать щелчка при краже голоса
+            sample_ptr <= 32'd0; // Сброс указателя строго в момент нажатия
         end 
         else if (!key_pressed && (env_state == ST_ATTACK || env_state == ST_SUSTAIN)) begin
-            // Кнопку отпустили — переходим к плавному затуханию
             env_state <= ST_RELEASE;
         end
-        else if (sample_ptr[31:12] >= 32'd130000) begin
-            // ЗАЩИТА: Сэмпл скоро кончится (132304 макс). Начинаем плавно затухать заранее!
+        else if (sample_ptr[31:12] >= 32'd100000) begin // Автозатухание начинается на 100000
             env_state <= ST_RELEASE;
         end
 
-        // --- ДВИЖЕНИЕ УКАЗАТЕЛЯ СЭМПЛА ---
         if (env_state != ST_IDLE) begin
             sample_ptr <= sample_ptr + step;
+        end else begin
+            sample_ptr <= 32'd0; 
         end
 
-        // --- ЛОГИКА ОГИБАЮЩЕЙ (ENVELOPE) ---
+        // огибающая
         case (env_state)
             ST_IDLE: begin
-                envelope <= 0;
+                envelope <= 16'd0;
             end
             
             ST_ATTACK: begin
-                // Плавная атака (прибавляем по 400). Избавляет от щелчка в начале ноты!
-                // Это займет около 3-5 миллисекунд, ухо не заметит задержки, но щелчок пропадет.
                 if (envelope + 16'd400 < target_vol) begin
                     envelope <= envelope + 16'd400;
                 end else begin
@@ -74,31 +70,34 @@ module piano_voice (
             end
             
             ST_SUSTAIN: begin
-                // Медленное естественное затухание пока клавиша зажата
                 if (decay_div == 0) begin
                     if (envelope > 16'd2) envelope <= envelope - 16'd2;
                 end
             end
             
             ST_RELEASE: begin
-                // Плавный хвост при отпускании (отпускаем педаль/клавишу)
-                // Отнимаем по 15 единиц: полное затухание займет около 100-150 мс
-                if (envelope > 16'd15) begin
-                    envelope <= envelope - 16'd15;
+                // Медленное затухание (step = 2) при зажатой клавише или быстрое (step = 20) при отпускании
+                if (envelope > decay_step) begin
+                    envelope <= envelope - decay_step;
                 end else begin
-                    envelope <= 0;
-                    env_state <= ST_IDLE; // Звук полностью стих, отключаем голос
+                    envelope <= 16'd0;
+                    env_state <= ST_IDLE;
                 end
             end
+            
+            default: env_state <= ST_IDLE;
         endcase
     end
 
-    // Вычисление адреса ОЗУ
+    // Безопасное ограничение указателя 
+    wire [19:0] sample_idx_int = sample_ptr[31:12];
+    wire [17:0] local_ptr = (sample_idx_int >= 20'd132303) ? 18'd132303 : sample_idx_int[17:0];
+
     always @(*) begin
-        voice_ram_addr = (sample_index * 32'd132304) + sample_ptr[31:12]; 
+        voice_ram_addr = (sample_index * 32'd132304) + local_ptr; 
     end
 
-    // --- ДИНАМИЧЕСКИЙ ФИЛЬТР (LPF) ---
+    // динамический фильтр (LPF) 
     reg signed [23:0] lpf_reg = 0;
     wire signed [23:0] lpf_input = $signed({voice_ram_data, 8'b0}); 
     wire [3:0] k = (envelope > 16'hC000) ? 4'd1 :  

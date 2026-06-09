@@ -167,8 +167,9 @@ module piano_sample(
         .voice_addr_9(voice_addr[9]), .voice_data_9(voice_data[9])
     );
 
-    // МУЛЬТИПЛЕКСОР ШИНЫ ПАМЯТИ
     // =======================================================
+    // МУЛЬТИПЛЕКСОР ШИНЫ ПАМЯТИ
+
     wire [24:0]  avl_address    = (mode_play) ? fetcher_addr : loader_addr;
     wire [127:0] avl_writedata  = (mode_play) ? 128'd0       : loader_data;
     wire [15:0]  avl_byteenable = (mode_play) ? 16'hFFFF     : loader_byteenable;
@@ -235,7 +236,7 @@ module piano_sample(
     );
 
 	// =======================================================
-	// 5. Синтезатор (Играет готовые сэмплы из памяти)
+	// Синтезатор (Играет готовые сэмплы из памяти)
 
     Simple_I2S_Tone audio_inst (
         .clk_50              (CLOCK_50_B5B),

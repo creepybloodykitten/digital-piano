@@ -76,7 +76,7 @@ module uart_to_ram_loader (
                                 byte_buf[7],  byte_buf[6],  byte_buf[5],  byte_buf[4],
                                 byte_buf[3],  byte_buf[2],  byte_buf[1],  byte_buf[0]
                             };
-                            avm_write <= 1; // <-- Выставляем сигнал записи заранее!
+                            avm_write <= 1; // Выставляем сигнал записи заранее
                             state <= STATE_WRITE;
                             byte_cnt <= 0;
                         end else begin
@@ -88,7 +88,7 @@ module uart_to_ram_loader (
 
                 STATE_WRITE: begin 
                     if (!avm_waitrequest) begin
-                        avm_write <= 0; // <-- Сбрасываем запись только после её подтверждения
+                        avm_write <= 0; // Сбрасываем запись только после её подтверждения
                         avm_address <= avm_address + 1; 
                         samples_loaded_counter <= samples_loaded_counter + 8; 
                         

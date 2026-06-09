@@ -18,21 +18,18 @@ module midi_decoder (
         
         if (rx_ready) begin
             if (rx_data[7]) begin
-                // ИСПРАВЛЕНО: реагируем на статус-байт только если это Note ON (0x9_) или Note OFF (0x8_).
-                // Все остальные сообщения (системные, CC, Active Sensing 0xFE) отфильтровываются.
-                if (rx_data[7:4] == 4'h9 || rx_data[7:4] == 4'h8) begin
-                    running_status <= rx_data;
-                    state <= 1; // Переходим к ожиданию первого байта данных (Ноты)
-                end
+                // Пришел новый Status Byte
+                running_status <= rx_data;
+                state <= 1; // Ждем первый байт данных (Ноту)
             end 
             else begin
                 // Пришел Data Byte
                 case (state)
                     0: begin
-                        // Сработал Running Status (статус не передавался повторно)
+                        // Сработал Running Status (статуса не было, сразу пришли данные)
                         if (running_status[7:4] == 4'h9 || running_status[7:4] == 4'h8) begin
                             note_temp <= rx_data;
-                            state <= 2; // Ожидаем Velocity
+                            state <= 2; // Переходим к ожиданию Velocity
                         end
                     end
                     1: begin 
@@ -54,9 +51,8 @@ module midi_decoder (
                         end
                         
                         out_trig <= 1;
-                        state <= 0; // Сброс состояния для ожидания следующих данных
+                        state <= 0; // Возвращаемся в начало для приема следующих данных
                     end
-                    default: state <= 0;
                 endcase
             end
         end

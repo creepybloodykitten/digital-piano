@@ -33,12 +33,10 @@ module Simple_I2S_Tone(
     assign aud_bclk = audio_cnt[3]; 
     assign aud_lrck = audio_cnt[9]; 
 
-    // =======================================================
-    // БЕЗОПАСНАЯ СИНХРОНИЗАЦИЯ ДАННЫХ И ТРИГГЕРОВ (CDC)
-    // =======================================================
-    
-    // 1. Фиксируем MIDI данные в быстром домене clk_50 при каждом триггере.
-    // Они будут оставаться стабильными до следующего нажатия/отпускания клавиши.
+
+
+    // Фиксируем MIDI данные в быстром домене clk_50 при каждом триггере
+    // Они будут оставаться стабильными до следующего нажатия/отпускания клавиши
     reg [7:0] midi_note_hold = 0;
     reg [7:0] midi_vel_hold = 0;
     reg       midi_on_hold = 0;
@@ -53,7 +51,7 @@ module Simple_I2S_Tone(
         end
     end
 
-    // 2. Передаем переключатель (toggle) в медленный домен aud_lrck
+    // Передаем переключатель в медленный домен aud_lrck
     reg lrck_trig_s0, lrck_trig_s1, lrck_trig_s2;
     always @(posedge aud_lrck) begin
         lrck_trig_s0 <= midi_trig_toggle;
@@ -64,9 +62,8 @@ module Simple_I2S_Tone(
     // Импульс триггера в домене aud_lrck (длится ровно 1 такт)
     wire midi_trig_lrck = lrck_trig_s1 ^ lrck_trig_s2;
 
-    // =======================================================
-    // Декодер ноты (работает на стабильных данных)
-    // =======================================================
+
+    // Декодер ноты 
     wire [4:0] current_midi_sample_index;
     wire [15:0] current_midi_step;
 
@@ -166,7 +163,7 @@ module Simple_I2S_Tone(
         end
     endgenerate
 
-    // Смешивание (Громкий микшер: Способ №1 Вариант А)
+    // Смешивание
     wire signed [19:0] mix_sum;
     assign mix_sum = $signed(v_out[0]) + $signed(v_out[1]) + 
                      $signed(v_out[2]) + $signed(v_out[3]) + 

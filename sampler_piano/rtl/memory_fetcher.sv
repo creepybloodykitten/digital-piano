@@ -28,9 +28,8 @@ module memory_fetcher (
     reg [3:0] current_voice;
     reg [1:0] state;
     
-    // =================================================================
-    // СИНХРОНИЗАТОР И ВЫДЕЛИТЕЛЬ ФРОНТА (Clock Domain Crossing)
-    // =================================================================
+
+    // синхронизация
     reg lrck_sync_0, lrck_sync_1, lrck_sync_2;
     always @(posedge clk) begin 
         lrck_sync_0 <= lrck;
@@ -39,9 +38,7 @@ module memory_fetcher (
     end
     wire start_fetch = lrck_sync_1 & ~lrck_sync_2;
 
-    // =================================================================
-    // СТОРОЖЕВОЙ ТАЙМЕР ЗАВИСАНИЯ (Watchdog)
-    // =================================================================
+
     reg [15:0] stuck_counter;
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -55,9 +52,7 @@ module memory_fetcher (
     end
     assign fetcher_stuck = (stuck_counter > 16'd5000);
 
-    // =================================================================
-    // ДИАГНОСТИКА: НАЛИЧИЕ НЕ-НУЛЕВЫХ ДАННЫХ
-    // =================================================================
+    // наличие не нулевых данных
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             fetcher_has_data <= 0;
@@ -66,9 +61,7 @@ module memory_fetcher (
         end
     end
 
-    // =================================================================
-    // АВТОМАТ СОСТОЯНИЙ ЧТЕНИЯ (FSM)
-    // =================================================================
+    // fsm
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= 0;
