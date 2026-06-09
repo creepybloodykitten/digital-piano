@@ -1,0 +1,31 @@
+	component lpddr2_qsys is
+		port (
+			reset_reset_n                                 : in    std_logic                      := 'X';             -- reset_n
+			memory_mem_ca                                 : out   std_logic_vector(9 downto 0);                      -- mem_ca
+			memory_mem_ck                                 : out   std_logic_vector(0 downto 0);                      -- mem_ck
+			memory_mem_ck_n                               : out   std_logic_vector(0 downto 0);                      -- mem_ck_n
+			memory_mem_cke                                : out   std_logic_vector(0 downto 0);                      -- mem_cke
+			memory_mem_cs_n                               : out   std_logic_vector(0 downto 0);                      -- mem_cs_n
+			memory_mem_dm                                 : out   std_logic_vector(3 downto 0);                      -- mem_dm
+			memory_mem_dq                                 : inout std_logic_vector(31 downto 0)  := (others => 'X'); -- mem_dq
+			memory_mem_dqs                                : inout std_logic_vector(3 downto 0)   := (others => 'X'); -- mem_dqs
+			memory_mem_dqs_n                              : inout std_logic_vector(3 downto 0)   := (others => 'X'); -- mem_dqs_n
+			oct_rzqin                                     : in    std_logic                      := 'X';             -- rzqin
+			clk_clk                                       : in    std_logic                      := 'X';             -- clk
+			mem_if_lpddr2_emif_0_avl_waitrequest_n        : out   std_logic;                                         -- waitrequest_n
+			mem_if_lpddr2_emif_0_avl_beginbursttransfer   : in    std_logic                      := 'X';             -- beginbursttransfer
+			mem_if_lpddr2_emif_0_avl_address              : in    std_logic_vector(24 downto 0)  := (others => 'X'); -- address
+			mem_if_lpddr2_emif_0_avl_readdatavalid        : out   std_logic;                                         -- readdatavalid
+			mem_if_lpddr2_emif_0_avl_readdata             : out   std_logic_vector(127 downto 0);                    -- readdata
+			mem_if_lpddr2_emif_0_avl_writedata            : in    std_logic_vector(127 downto 0) := (others => 'X'); -- writedata
+			mem_if_lpddr2_emif_0_avl_byteenable           : in    std_logic_vector(15 downto 0)  := (others => 'X'); -- byteenable
+			mem_if_lpddr2_emif_0_avl_read                 : in    std_logic                      := 'X';             -- read
+			mem_if_lpddr2_emif_0_avl_write                : in    std_logic                      := 'X';             -- write
+			mem_if_lpddr2_emif_0_avl_burstcount           : in    std_logic_vector(2 downto 0)   := (others => 'X'); -- burstcount
+			mem_if_lpddr2_emif_0_status_local_init_done   : out   std_logic;                                         -- local_init_done
+			mem_if_lpddr2_emif_0_status_local_cal_success : out   std_logic;                                         -- local_cal_success
+			mem_if_lpddr2_emif_0_status_local_cal_fail    : out   std_logic;                                         -- local_cal_fail
+			mem_if_lpddr2_emif_0_afi_clk_clk              : out   std_logic                                          -- clk
+		);
+	end component lpddr2_qsys;
+
