@@ -86,3 +86,18 @@ derive_clock_uncertainty
 
 
 
+# 1. Объявляем сгенерированные делителями частоты (ripple clocks) как полноценные клоки
+create_generated_clock -name aud_lrck -source [get_ports {CLOCK_50_B5B}] -divide_by 1024 [get_registers {*audio_inst|audio_cnt[9]}]
+create_generated_clock -name aud_bclk -source [get_ports {CLOCK_50_B5B}] -divide_by 16 [get_registers {*audio_inst|audio_cnt[3]}]
+create_generated_clock -name i2c_clk  -source [get_ports {CLOCK_50_B5B}] -divide_by 2500 [get_registers {*cfg_inst|mI2C_CTRL_CLK}]
+
+# 2. Указываем Quartus, что все эти домены асинхронны друг другу.
+# В коде у вас уже есть безопасные цепочки синхронизации (CDC), поэтому Quartus
+# больше не будет тратить ресурсы на бессмысленную задержку в 2000 нс.
+set_clock_groups -asynchronous \
+    -group [get_clocks {CLOCK_50_B5B}] \
+    -group [get_clocks {aud_lrck}] \
+    -group [get_clocks {aud_bclk}] \
+    -group [get_clocks {i2c_clk}] \
+    -group [get_clocks {*pll_afi_clk*}] \
+    -group [get_clocks {*pll_avl_clk*}]
