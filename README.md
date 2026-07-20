@@ -1,6 +1,6 @@
 # digital piano on fpga
 
-Проект по реализация цифрового пианино на ПЛИС Cyclone V Started kit GX для имитации звука фортепиано при помощи midi-клавиатуры
+Проект по реализация цифрового полифонического пианино на ПЛИС Cyclone V Started kit GX для имитации звука фортепиано при помощи midi-клавиатуры с минимальной временной задержкой обработки звука
 
 <img width="1005" height="649" alt="image" src="https://github.com/user-attachments/assets/5298169a-37f7-4819-84c4-e972f88bd3ef" />
 
